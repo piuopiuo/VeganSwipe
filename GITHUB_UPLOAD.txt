@@ -1,0 +1,10 @@
+VeganSwipe – GitHub Pages Upload
+
+1. Entpacke diese ZIP-Datei.
+2. Lade ALLE enthaltenen Dateien direkt in die oberste Ebene deines GitHub-Repositories hoch.
+3. Wichtig: index.html muss direkt im Repository sichtbar sein, nicht in einem Unterordner.
+4. GitHub: Settings -> Pages -> Source: Deploy from a branch -> main -> /(root) -> Save.
+5. Danach die angezeigte GitHub-Pages-URL in Safari auf dem iPhone öffnen.
+6. Teilen -> Zum Home-Bildschirm -> Als Web-App öffnen.
+
+Diese ZIP enthält absichtlich keine Unterordner.
