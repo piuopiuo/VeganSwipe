@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Food photo unavailable offline">
+ <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfeadd"/><stop offset="1" stop-color="#8db69a"/></linearGradient></defs>
+ <rect width="1200" height="900" fill="url(#g)"/>
+ <circle cx="600" cy="445" r="280" fill="#f8f6ef" opacity=".96"/>
+ <circle cx="600" cy="445" r="215" fill="#d6a866"/>
+ <path d="M420 420c70-120 170-130 245-55s165 65 190 150c-105 120-340 145-435-5-20-30-20-60 0-90z" fill="#517b4d"/>
+ <circle cx="535" cy="410" r="55" fill="#c94f40"/><circle cx="685" cy="505" r="62" fill="#ece3a0"/><circle cx="605" cy="555" r="42" fill="#7a4f31"/>
+ <text x="600" y="805" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Arial" font-size="34" fill="#243126">Photo unavailable offline</text>
+</svg>

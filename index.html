@@ -8,166 +8,144 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="VeganSwipe">
-  <meta name="description" content="Local-first vegan recipe discovery with swipe recommendations and offline storage." />
+  <meta name="description" content="Vegan main-dish discovery with swipe recommendations, real food photos and local storage." />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="stylesheet" href="./styles.css" />
   <title>VeganSwipe</title>
 </head>
 <body>
-  <div id="app" class="app-shell">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow" data-i18n="tagline">Local-first vegan discovery</div>
-        <h1>VeganSwipe</h1>
+<div id="app" class="app-shell">
+  <header class="topbar">
+    <div><div class="eyebrow">Vegan · Main dishes only</div><h1>VeganSwipe</h1></div>
+    <button id="offlineBadge" class="status-pill" type="button" aria-label="Connection status">● <span>Online</span></button>
+  </header>
+
+  <main>
+    <section id="discoverView" class="view active" aria-label="Discover">
+      <div id="setupBanner" class="setup-banner hidden">
+        <div><strong>Build your recipe library</strong><p>Downloads a modern English recipe dataset and keeps only strict vegan main dishes that have a real food photo.</p></div>
+        <button id="startImportButton" class="primary-button" type="button">Download recipes</button>
       </div>
-      <button id="offlineBadge" class="status-pill" type="button" aria-label="Offline status">● <span>Ready</span></button>
-    </header>
 
-    <main>
-      <section id="discoverView" class="view active" aria-label="Discover">
-        <div id="setupBanner" class="setup-banner hidden">
-          <div>
-            <strong data-i18n="downloadTitle">Build your offline library</strong>
-            <p data-i18n="downloadBody">Download the open recipe archive once. Recipes and your preferences stay on this iPhone.</p>
-          </div>
-          <button id="startImportButton" class="primary-button" type="button" data-i18n="downloadButton">Download recipes</button>
+      <div id="importPanel" class="import-panel hidden">
+        <div class="progress-copy"><strong id="importTitle">Preparing library…</strong><span id="importCounter">0%</span></div>
+        <div class="progress-track"><div id="importProgress" class="progress-fill"></div></div>
+        <p id="importDetail" class="muted">Checking recipe images and filtering the source library.</p>
+      </div>
+
+      <div id="cardStage" class="card-stage" aria-live="polite">
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-symbol">◎</div><h2>No recipes match these filters.</h2>
+          <p>Relax one or more filters, or download/update the recipe library.</p>
+          <button id="openFiltersFromEmpty" class="secondary-button" type="button">Adjust filters</button>
+        </div>
+        <article id="nextCard" class="recipe-card next-card" aria-hidden="true"></article>
+        <article id="recipeCard" class="recipe-card"></article>
+      </div>
+
+      <div class="swipe-actions" aria-label="Recipe actions">
+        <button id="rejectButton" class="round-action reject" type="button" aria-label="Reject">×</button>
+        <button id="laterButton" class="round-action later" type="button" aria-label="Show later">↥</button>
+        <button id="saveButton" class="round-action save" type="button" aria-label="Save">♡</button>
+      </div>
+      <div class="swipe-hints"><span>Left · never again</span><span>Up · later</span><span>Right · save</span></div>
+    </section>
+
+    <section id="savedView" class="view" aria-label="Saved">
+      <div class="section-heading">
+        <div><div class="eyebrow">Your library</div><h2>Saved</h2></div>
+        <div class="segmented" role="group" aria-label="Layout"><button id="gridMode" class="active" type="button">▦</button><button id="listMode" type="button">☷</button></div>
+      </div>
+      <div class="toolbar-row">
+        <input id="savedSearch" class="search-field" type="search" placeholder="Search saved recipes" autocomplete="off" />
+        <select id="savedSort" class="select-field"><option value="recent">Newest</option><option value="time">Time</option><option value="price">Price</option><option value="favorite">Favorites first</option></select>
+      </div>
+      <div id="savedRecipes" class="saved-grid"></div>
+    </section>
+
+    <section id="filtersView" class="view" aria-label="Filters">
+      <div class="section-heading"><div><div class="eyebrow">Tap instead of type</div><h2>Filters</h2></div></div>
+      <form id="filtersForm" class="settings-stack">
+        <div class="panel">
+          <div class="panel-title"><h3>Exclude ingredients today</h3><span>Only required ingredients are blocked</span></div>
+          <div id="tempExcludeChips" class="ingredient-groups"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><h3>Prefer ingredients</h3><span>Raises recipes in your feed</span></div>
+          <div id="tempPreferChips" class="ingredient-groups"></div>
         </div>
 
-        <div id="importPanel" class="import-panel hidden">
-          <div class="progress-copy"><strong id="importTitle">Preparing library…</strong><span id="importCounter">0 / 0</span></div>
-          <div class="progress-track"><div id="importProgress" class="progress-fill"></div></div>
-          <p id="importDetail" class="muted">You can keep this screen open while the first collections are imported.</p>
+        <div class="panel">
+          <div class="panel-title"><h3>Realistic cooking time</h3><span>Estimated for a first-time cook</span></div>
+          <div id="timePresetChips" class="chip-grid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><h3>Maximum price per portion</h3><span>Germany estimate</span></div>
+          <div id="pricePresetChips" class="chip-grid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><h3>Minimum protein</h3><span>Optional</span></div>
+          <div id="proteinPresetChips" class="chip-grid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><h3>Maximum calories</h3><span>Optional</span></div>
+          <div id="caloriePresetChips" class="chip-grid"></div>
         </div>
 
-        <div id="cardStage" class="card-stage" aria-live="polite">
-          <div id="emptyState" class="empty-state hidden">
-            <div class="empty-symbol">◎</div>
-            <h2 data-i18n="noRecipes">No recipes match these filters.</h2>
-            <p data-i18n="noRecipesBody">Relax a filter, show later recipes again, or import more collections.</p>
-            <button id="openFiltersFromEmpty" class="secondary-button" type="button" data-i18n="adjustFilters">Adjust filters</button>
-          </div>
-          <article id="nextCard" class="recipe-card next-card" aria-hidden="true"></article>
-          <article id="recipeCard" class="recipe-card"></article>
+        <div class="panel"><div class="panel-title"><h3>Cuisines</h3><span>Tap cuisines you do not want today</span></div><div id="cuisineChips" class="chip-grid"></div></div>
+        <div class="panel"><div class="panel-title"><h3>Cooking methods</h3><span>If selected, recipes must use one</span></div><div id="methodChips" class="chip-grid"></div></div>
+        <div class="panel"><div class="panel-title"><h3>Healthy preferences</h3><span>Ranking preferences, not hard exclusions</span></div><div id="healthChips" class="chip-grid"></div></div>
+
+        <button class="primary-button full" type="submit">Apply filters</button>
+        <button id="clearTempFilters" class="secondary-button full" type="button">Clear temporary filters</button>
+      </form>
+    </section>
+
+    <section id="settingsView" class="view" aria-label="Settings">
+      <div class="section-heading"><div><div class="eyebrow">Personalize</div><h2>Settings</h2></div></div>
+      <div class="settings-stack">
+        <div class="panel">
+          <div class="panel-title"><h3>Data & offline</h3></div>
+          <div class="stat-row"><span>Source recipes scanned</span><strong id="sourceRecipeCount">0</strong></div>
+          <div class="stat-row"><span>Local vegan main dishes with photos</span><strong id="veganRecipeCount">0</strong></div>
+          <div class="stat-row"><span>Saved recipes</span><strong id="savedCount">0</strong></div>
+          <button id="importMoreButton" class="primary-button full" type="button">Download / rebuild recipe library</button>
+          <button id="cacheImagesButton" class="secondary-button full" type="button">Cache recipe photos for offline use</button>
+          <button id="exportButton" class="secondary-button full" type="button">Export personal backup</button>
+          <label class="secondary-button full file-button">Restore personal backup<input id="backupInput" type="file" accept="application/json" /></label>
+          <p class="footnote">Recipe text, filters, likes and dislikes are stored locally after import. Food photos are loaded from the image dataset and cached as you see them; the optional button above tries to cache the whole local feed for offline use.</p>
         </div>
 
-        <div class="swipe-actions" aria-label="Recipe actions">
-          <button id="rejectButton" class="round-action reject" type="button" aria-label="Reject">×</button>
-          <button id="laterButton" class="round-action later" type="button" aria-label="Show later">↥</button>
-          <button id="saveButton" class="round-action save" type="button" aria-label="Save">♡</button>
+        <div class="panel">
+          <div class="panel-title"><h3>Permanent ingredient exclusions</h3><span>Always active</span></div>
+          <div id="permanentExcludeChips" class="ingredient-groups"></div>
         </div>
-        <div class="swipe-hints"><span data-i18n="leftHint">Left · never again</span><span data-i18n="upHint">Up · later</span><span data-i18n="rightHint">Right · save</span></div>
-      </section>
-
-      <section id="savedView" class="view" aria-label="Saved">
-        <div class="section-heading">
-          <div><div class="eyebrow" data-i18n="yourLibrary">Your library</div><h2 data-i18n="saved">Saved</h2></div>
-          <div class="segmented" role="group" aria-label="Layout"><button id="gridMode" class="active" type="button">▦</button><button id="listMode" type="button">☷</button></div>
+        <div class="panel">
+          <div class="panel-title"><h3>Default realistic cooking time</h3><span>Applied when no temporary time is selected</span></div>
+          <div id="defaultTimeChips" class="chip-grid"></div>
         </div>
-        <div class="toolbar-row">
-          <input id="savedSearch" class="search-field" type="search" placeholder="Search saved recipes" autocomplete="off" />
-          <select id="savedSort" class="select-field">
-            <option value="recent">Newest</option>
-            <option value="time">Time</option>
-            <option value="price">Price</option>
-            <option value="favorite">Favorites first</option>
-          </select>
+        <div class="panel">
+          <div class="panel-title"><h3>Equipment</h3><span>Select what you own; add more any time</span></div>
+          <div id="equipmentChips" class="chip-grid"></div>
+          <div class="inline-add"><input id="newEquipment" type="text" placeholder="Add equipment, e.g. rice cooker" /><button id="addEquipmentButton" class="secondary-button" type="button">+</button></div>
         </div>
-        <div id="savedRecipes" class="saved-grid"></div>
-      </section>
+        <button id="saveSettingsButton" class="primary-button full" type="button">Save permanent settings</button>
+        <div class="panel"><div class="panel-title"><h3>Install on iPhone</h3></div><ol class="install-steps"><li>Open your GitHub Pages link in Safari.</li><li>Tap Share.</li><li>Choose “Add to Home Screen” and enable “Open as Web App”.</li></ol></div>
+      </div>
+    </section>
+  </main>
+</div>
 
-      <section id="filtersView" class="view" aria-label="Filters">
-        <div class="section-heading"><div><div class="eyebrow" data-i18n="todayAndAlways">Today & always</div><h2 data-i18n="filters">Filters</h2></div></div>
-        <form id="filtersForm" class="settings-stack">
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="temporaryFilters">Temporary filters</h3><span data-i18n="temporaryHint">Only for the current session</span></div>
-            <label class="field-label"><span data-i18n="excludeToday">Exclude ingredients today</span><input id="tempExclude" type="text" placeholder="e.g. bell pepper, mushrooms" /></label>
-            <label class="field-label"><span data-i18n="preferToday">Prefer ingredients</span><input id="tempPrefer" type="text" placeholder="e.g. tofu, lentils" /></label>
-            <div class="two-col">
-              <label class="field-label"><span data-i18n="maxTime">Max realistic time</span><select id="maxTime"><option value="">Any</option><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select></label>
-              <label class="field-label"><span data-i18n="maxPrice">Max €/portion</span><input id="maxPrice" type="number" inputmode="decimal" min="0" step="0.5" placeholder="Any" /></label>
-            </div>
-            <div class="two-col">
-              <label class="field-label"><span data-i18n="minProtein">Min protein</span><input id="minProtein" type="number" inputmode="numeric" min="0" step="1" placeholder="Any" /></label>
-              <label class="field-label"><span data-i18n="maxCalories">Max calories</span><input id="maxCalories" type="number" inputmode="numeric" min="0" step="25" placeholder="Any" /></label>
-            </div>
-          </div>
+<nav class="tabbar" aria-label="Main navigation">
+  <button class="tab active" data-view="discoverView" type="button"><span>◉</span><small>Discover</small></button>
+  <button class="tab" data-view="savedView" type="button"><span>♡</span><small>Saved</small></button>
+  <button class="tab" data-view="filtersView" type="button"><span>≡</span><small>Filters</small></button>
+  <button class="tab" data-view="settingsView" type="button"><span>⚙︎</span><small>Settings</small></button>
+</nav>
 
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="cuisines">Cuisines</h3><span data-i18n="tapToExclude">Tap to exclude today</span></div>
-            <div id="cuisineChips" class="chip-grid"></div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="methods">Cooking methods</h3><span data-i18n="chooseMethods">Show recipes using selected methods</span></div>
-            <div id="methodChips" class="chip-grid"></div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="healthGoals">Healthy preferences</h3><span data-i18n="healthRankHint">These influence ranking, not hard exclusion</span></div>
-            <div id="healthChips" class="chip-grid"></div>
-          </div>
-
-          <button class="primary-button full" type="submit" data-i18n="applyFilters">Apply filters</button>
-          <button id="clearTempFilters" class="secondary-button full" type="button" data-i18n="clearTemporary">Clear temporary filters</button>
-        </form>
-      </section>
-
-      <section id="settingsView" class="view" aria-label="Settings">
-        <div class="section-heading"><div><div class="eyebrow" data-i18n="personalize">Personalize</div><h2 data-i18n="settings">Settings</h2></div></div>
-        <div class="settings-stack">
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="dataAndOffline">Data & offline</h3></div>
-            <div class="stat-row"><span data-i18n="allLocalRecipes">All local recipes</span><strong id="allRecipeCount">0</strong></div>
-            <div class="stat-row"><span data-i18n="veganFeedRecipes">Vegan feed recipes</span><strong id="veganRecipeCount">0</strong></div>
-            <div class="stat-row"><span data-i18n="savedRecipesStat">Saved recipes</span><strong id="savedCount">0</strong></div>
-            <button id="importMoreButton" class="primary-button full" type="button" data-i18n="downloadOrUpdate">Download / update full library</button>
-            <button id="exportButton" class="secondary-button full" type="button" data-i18n="exportBackup">Export personal backup</button>
-            <label class="secondary-button full file-button"><span data-i18n="importBackup">Restore personal backup</span><input id="backupInput" type="file" accept="application/json" /></label>
-            <p class="footnote" data-i18n="offlineNote">After the app shell and recipe library are downloaded, browsing, swiping, filtering, saved recipes and recommendations work offline. Remote food images are intentionally not required.</p>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="permanentPreferences">Permanent preferences</h3><span data-i18n="alwaysApply">Always applied</span></div>
-            <label class="field-label"><span data-i18n="neverIngredients">Never show required ingredients</span><input id="permanentExclude" type="text" placeholder="e.g. olives, coriander" /></label>
-            <label class="field-label"><span data-i18n="defaultTime">Default max realistic time</span><select id="defaultMaxTime"><option value="">Any</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select></label>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="equipment">Equipment</h3><span data-i18n="equipmentHint">Add what you own at any time</span></div>
-            <div id="equipmentChips" class="chip-grid"></div>
-            <div class="inline-add"><input id="newEquipment" type="text" placeholder="Add equipment" /><button id="addEquipmentButton" class="secondary-button" type="button">+</button></div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="language">Language</h3></div>
-            <select id="languageSelect" class="select-field full"><option value="en">English</option><option value="de">Deutsch</option></select>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title"><h3 data-i18n="install">Install on iPhone</h3></div>
-            <ol class="install-steps"><li data-i18n="install1">Open this site in Safari.</li><li data-i18n="install2">Tap Share.</li><li data-i18n="install3">Choose “Add to Home Screen”, then “Open as Web App”.</li></ol>
-          </div>
-
-          <button id="saveSettingsButton" class="primary-button full" type="button" data-i18n="saveSettings">Save settings</button>
-        </div>
-      </section>
-    </main>
-
-    <nav class="tabbar" aria-label="Main navigation">
-      <button class="tab active" data-view="discoverView" type="button"><span>◉</span><small data-i18n="discover">Discover</small></button>
-      <button class="tab" data-view="savedView" type="button"><span>♡</span><small data-i18n="saved">Saved</small></button>
-      <button class="tab" data-view="filtersView" type="button"><span>≛</span><small data-i18n="filters">Filters</small></button>
-      <button class="tab" data-view="settingsView" type="button"><span>⚙︎</span><small data-i18n="settings">Settings</small></button>
-    </nav>
-  </div>
-
-  <dialog id="recipeDialog" class="recipe-dialog">
-    <button id="closeDialog" class="dialog-close" type="button" aria-label="Close">×</button>
-    <div id="recipeDetail"></div>
-  </dialog>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="./app.js"></script>
+<dialog id="recipeDialog" class="recipe-dialog"><button id="closeDialog" class="dialog-close" type="button" aria-label="Close">×</button><div id="recipeDetail"></div></dialog>
+<div id="toast" class="toast" role="status"></div>
+<script type="module" src="./app.js"></script>
 </body>
 </html>

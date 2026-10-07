@@ -1,10 +1,16 @@
-VeganSwipe – GitHub Pages Upload
+VEGANSWIPE 0.2 — GITHUB PAGES
 
-1. Entpacke diese ZIP-Datei.
-2. Lade ALLE enthaltenen Dateien direkt in die oberste Ebene deines GitHub-Repositories hoch.
-3. Wichtig: index.html muss direkt im Repository sichtbar sein, nicht in einem Unterordner.
-4. GitHub: Settings -> Pages -> Source: Deploy from a branch -> main -> /(root) -> Save.
-5. Danach die angezeigte GitHub-Pages-URL in Safari auf dem iPhone öffnen.
-6. Teilen -> Zum Home-Bildschirm -> Als Web-App öffnen.
+1. Extract this ZIP.
+2. Open your VeganSwipe GitHub repository.
+3. Delete/replace the old VeganSwipe web files.
+4. Upload ALL files from this ZIP directly into the repository root.
+   index.html must be visible at the top level.
+5. Commit the changes.
+6. Wait until Settings > Pages shows the new deployment as live.
+7. On the iPhone, open the GitHub Pages URL once in Safari and refresh.
+8. Open/install VeganSwipe and press “Download recipes”.
 
-Diese ZIP enthält absichtlich keine Unterordner.
+IMPORTANT FOR USERS UPDATING FROM 0.1:
+The app automatically discards the old historical recipe database when it sees the new dataset version. Personal settings/actions are stored separately.
+
+The ZIP itself should NOT be uploaded as the website.

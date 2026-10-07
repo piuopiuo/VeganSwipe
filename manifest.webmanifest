@@ -1,7 +1,7 @@
 {
   "name": "VeganSwipe",
   "short_name": "VeganSwipe",
-  "description": "Local-first vegan recipe discovery with offline swipe recommendations.",
+  "description": "Vegan main-dish discovery with real food photos, swipe recommendations and local storage.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
